@@ -6,8 +6,6 @@ import { batchSummarize } from '../lib/summarize.mjs';
 const VALID_CATEGORIES = ['coronary', 'valvular', 'structural', 'aortic', 'ecmo', 'news'];
 
 export default async function handler(req, res) {
-  // Vercel signs cron-triggered requests with this header automatically.
-  // Rejects anyone hitting the URL directly without the secret.
   const authHeader = req.headers['authorization'];
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -21,9 +19,6 @@ export default async function handler(req, res) {
   let supabase;
 
   try {
-    // Validate env vars up front with clear errors, since a malformed
-    // SUPABASE_URL throws inside createClient() and previously crashed
-    // silently before reaching the catch block below.
     if (!process.env.SUPABASE_URL) throw new Error('SUPABASE_URL is not set');
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY) throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set');
     if (!process.env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY is not set');
@@ -70,6 +65,7 @@ export default async function handler(req, res) {
     }
 
     if (candidates.length === 0) {
+      console.log(`Ingest for ${category}: 0 candidates found from source (search returned nothing).`);
       return res.status(200).json({ category, fetched: 0, inserted: 0 });
     }
 
@@ -85,6 +81,7 @@ export default async function handler(req, res) {
     const fresh = candidates.filter((c) => !existingIds.has(c.externalId));
 
     if (fresh.length === 0) {
+      console.log(`Ingest for ${category}: ${candidates.length} candidates found, all already in database (no new items).`);
       return res.status(200).json({ category, fetched: candidates.length, inserted: 0 });
     }
 
@@ -93,7 +90,7 @@ export default async function handler(req, res) {
 
     // 4. Insert.
     const rows = summarized
-      .filter((it) => it.summary) // skip anything the model couldn't summarize
+      .filter((it) => it.summary !== null && it.summary !== undefined)
       .map((it) => ({
         category,
         source: it.source,
@@ -108,6 +105,7 @@ export default async function handler(req, res) {
     const { error: insertErr } = await supabase.from('feed_items').insert(rows);
     if (insertErr) throw insertErr;
 
+    console.log(`Ingest succeeded for ${category}: fetched=${candidates.length} fresh=${fresh.length} inserted=${rows.length} skipped=${fresh.length - rows.length}`);
     return res.status(200).json({ category, fetched: candidates.length, inserted: rows.length });
   } catch (err) {
     console.error(`Ingest failed for ${category}:`, err);
