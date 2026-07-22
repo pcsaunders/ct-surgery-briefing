@@ -26,6 +26,7 @@
   header .inner { padding: 28px 20px 0; max-width: 860px; margin: 0 auto; }
   .eyebrow { font-family: 'Newsreader', serif; font-style: italic; font-size: 14px; color: var(--sage-deep); margin-bottom: 2px; }
   h1 { font-family: 'Newsreader', serif; font-weight: 500; font-size: 30px; margin: 0; letter-spacing: -0.01em; }
+  .byline { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
   .tabs { display: flex; gap: 4px; margin-top: 20px; }
   .tab-btn { display: flex; align-items: center; gap: 6px; padding: 10px 16px; border: none; background: transparent; border-bottom: 2px solid transparent; color: var(--muted); font-weight: 600; font-size: 14px; cursor: pointer; font-family: 'Public Sans', sans-serif; }
   .tab-btn.active { color: var(--navy); border-bottom: 2px solid var(--navy); }
@@ -63,6 +64,7 @@
   <div class="inner">
     <div class="eyebrow">Literature & news</div>
     <h1>CT Surgery Briefing</h1>
+    <div class="byline">Curated by Paul C. Saunders, MD</div>
     <div class="tabs">
       <button class="tab-btn active" data-tab="feed">Recent feed</button>
       <button class="tab-btn" data-tab="search">Search</button>
@@ -79,9 +81,6 @@
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-// TODO: paste these from your Supabase project — Settings → API.
-// The anon/public key is safe to expose here; it's restricted to read-only
-// by the row-level security policy in schema.sql.
 const SUPABASE_URL = "https://bbcsewafsweqxjeanmbh.supabase.co";
 const SUPABASE_ANON_KEY = 'sb_publishable_bpf2nKWo_1-hXbutPdtFSw_2nCuwqk_';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -172,7 +171,7 @@ async function loadFeed(category) {
       .from('feed_items')
       .select('*')
       .order('published_date', { ascending: false })
-      .limit(30);
+      .limit(50);
     if (category !== 'all') query = query.eq('category', category);
 
     const { data, error } = await query;
