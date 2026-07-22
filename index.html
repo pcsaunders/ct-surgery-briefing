@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>CT Surgery Briefing</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%231B2A4A%22/><text x=%2250%22 y=%2265%22 font-size=%2255%22 fill=%22%237A9B76%22 text-anchor=%22middle%22 font-family=%22Georgia%22>C</text></svg>" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="CT Briefing" />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F7F5F0;
+    --surface: #FFFFFF;
+    --navy: #1B2A4A;
+    --sage: #7A9B76;
+    --sage-deep: #5A7A57;
+    --red: #B23A2E;
+    --border: #E3DFD3;
+    --muted: #7A776C;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--navy); font-family: 'Public Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 20px; }
+  header { border-bottom: 1px solid var(--border); background: var(--surface); }
+  header .inner { padding: 28px 20px 0; max-width: 860px; margin: 0 auto; }
+  .eyebrow { font-family: 'Newsreader', serif; font-style: italic; font-size: 14px; color: var(--sage-deep); margin-bottom: 2px; }
+  h1 { font-family: 'Newsreader', serif; font-weight: 500; font-size: 30px; margin: 0; letter-spacing: -0.01em; }
+  .tabs { display: flex; gap: 4px; margin-top: 20px; }
+  .tab-btn { display: flex; align-items: center; gap: 6px; padding: 10px 16px; border: none; background: transparent; border-bottom: 2px solid transparent; color: var(--muted); font-weight: 600; font-size: 14px; cursor: pointer; font-family: 'Public Sans', sans-serif; }
+  .tab-btn.active { color: var(--navy); border-bottom: 2px solid var(--navy); }
+  .content { padding-top: 24px; }
+  .category-row { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .category-row::-webkit-scrollbar { display: none; }
+  .category-btn { flex-shrink: 0; padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--navy); font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Public Sans', sans-serif; white-space: nowrap; }
+  .category-btn.active { border-color: var(--navy); background: var(--navy); color: #fff; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 10px; }
+  .cat-tag-row { margin-bottom: 8px; }
+  .cat-tag { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; }
+  .card .title { font-size: 15px; font-weight: 600; line-height: 1.35; }
+  .card .authors { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+  .card .journal { font-size: 12.5px; color: var(--sage-deep); margin-top: 3px; font-weight: 600; }
+  .card .summary { font-size: 13.5px; margin-top: 8px; line-height: 1.5; }
+  .card a { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--navy); text-decoration: none; }
+  .state-msg { display: flex; align-items: center; gap: 8px; color: var(--muted); padding: 30px 0; justify-content: center; font-size: 14px; }
+  .error-box { display: flex; align-items: center; gap: 8px; color: var(--red); padding: 16px; background: #FBEAE7; border-radius: 8px; font-size: 14px; }
+  .empty { text-align: center; padding: 40px 20px; color: var(--muted); }
+  .search-row { display: flex; gap: 8px; }
+  input[type=text] { flex: 1; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 14px; font-family: 'Public Sans', sans-serif; background: var(--surface); }
+  button.primary { padding: 0 18px; border-radius: 8px; border: none; background: var(--navy); color: #fff; font-weight: 600; cursor: pointer; font-family: 'Public Sans', sans-serif; }
+  button.icon-btn { padding: 0 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--navy); cursor: pointer; }
+  .saved-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .saved-chip { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 5px 10px; font-size: 12.5px; }
+  .saved-chip span { cursor: pointer; }
+  .saved-chip .x { cursor: pointer; color: var(--muted); font-weight: 700; }
+  .footer-note { max-width: 860px; margin: 24px auto 40px; padding: 0 20px; font-size: 11.5px; color: var(--muted); text-align: center; }
+  .spin { animation: spin 1s linear infinite; display: inline-block; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<header>
+  <div class="inner">
+    <div class="eyebrow">Literature & news</div>
+    <h1>CT Surgery Briefing</h1>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="feed">Recent feed</button>
+      <button class="tab-btn" data-tab="search">Search</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="feed-panel" class="content"></div>
+  <div id="search-panel" class="content" style="display:none"></div>
+</div>
+<div class="footer-note">Feed items are pulled daily from PubMed and cardiology news and summarized for a quick read. Search results are gathered live via web search. Neither is a direct PubMed index — verify anything case-critical against the source link.</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+// TODO: paste these from your Supabase project — Settings → API.
+// The anon/public key is safe to expose here; it's restricted to read-only
+// by the row-level security policy in schema.sql.
+const SUPABASE_URL = 'https://bbcsewafsweqxjeanmbh.supabase.co/rest/v1/;
+const SUPABASE_ANON_KEY = 'sb_publishable_bpf2nKWo_1-hXbutPdtFSw_2nCuwqk_';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const CATEGORIES = [
+  { id: 'all', label: 'All' },
+  { id: 'coronary', label: 'Coronary' },
+  { id: 'valvular', label: 'Valvular Heart Disease' },
+  { id: 'structural', label: 'Structural Heart' },
+  { id: 'aortic', label: 'Aortic' },
+  { id: 'ecmo', label: 'ECMO' },
+  { id: 'news', label: 'News' },
+];
+
+const CATEGORY_META = {
+  coronary:   { color: '#B23A2E', tint: 'rgba(178,58,46,0.12)' },
+  valvular:   { color: '#2C5C55', tint: 'rgba(62,124,116,0.14)' },
+  structural: { color: '#5A7A57', tint: 'rgba(122,155,118,0.16)' },
+  aortic:     { color: '#8C6620', tint: 'rgba(192,138,46,0.16)' },
+  ecmo:       { color: '#4A6272', tint: 'rgba(74,98,114,0.14)' },
+  news:       { color: '#6B5A47', tint: 'rgba(138,117,97,0.16)' },
+};
+
+let currentCategory = 'all';
+let feedLoaded = false;
+
+async function callAPI(prompt) {
+  const res = await fetch('/api/search', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt })
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data.papers || [];
+}
+
+function categoryLabel(id) {
+  const found = CATEGORIES.find(c => c.id === id);
+  return found ? found.label : id;
+}
+
+function paperCardHTML(p) {
+  const meta = p.category ? CATEGORY_META[p.category] : null;
+  const borderStyle = meta ? ` style="border-left:4px solid ${meta.color};"` : '';
+  const tag = meta
+    ? `<div class="cat-tag-row"><span class="cat-tag" style="background:${meta.tint};color:${meta.color}">${escapeHTML(categoryLabel(p.category))}</span></div>`
+    : '';
+  return `
+    <div class="card"${borderStyle}>
+      ${tag}
+      <div class="title">${escapeHTML(p.title || 'Untitled')}</div>
+      <div class="authors">${escapeHTML(p.authors || '')}</div>
+      <div class="journal">${escapeHTML(p.journal || '')}${p.date ? ' · ' + escapeHTML(p.date) : ''}</div>
+      ${p.summary ? `<div class="summary">${escapeHTML(p.summary)}</div>` : ''}
+      ${p.url ? `<a href="${escapeHTML(p.url)}" target="_blank" rel="noopener noreferrer">View source ↗</a>` : ''}
+    </div>`;
+}
+
+function escapeHTML(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderState(container, { loading, error, papers, emptyText }) {
+  if (loading) {
+    container.innerHTML = `<div class="state-msg"><span class="spin">⟳</span> Loading…</div>`;
+    return;
+  }
+  if (error) {
+    container.innerHTML = `<div class="error-box">⚠ ${escapeHTML(error)}</div>`;
+    return;
+  }
+  if (!papers || papers.length === 0) {
+    container.innerHTML = `<div class="empty">${emptyText}</div>`;
+    return;
+  }
+  container.innerHTML = papers.map(paperCardHTML).join("");
+}
+
+// ---- Feed (Supabase-backed, categorized, refreshed daily by the pipeline) ----
+async function loadFeed(category) {
+  currentCategory = category;
+  renderCategoryButtons();
+  const resultsEl = document.getElementById('feed-results');
+  renderState(resultsEl, { loading: true });
+  try {
+    let query = supabase
+      .from('feed_items')
+      .select('*')
+      .order('published_date', { ascending: false })
+      .limit(30);
+    if (category !== 'all') query = query.eq('category', category);
+
+    const { data, error } = await query;
+    if (error) throw new Error(error.message);
+
+    const papers = (data || []).map(row => ({
+      title: row.title,
+      authors: row.authors,
+      journal: row.source,
+      date: row.published_date,
+      url: row.url,
+      summary: row.summary,
+      category: row.category,
+    }));
+
+    renderState(resultsEl, { loading: false, papers, emptyText: "Nothing here yet — check back after the next daily update." });
+  } catch (e) {
+    renderState(resultsEl, { loading: false, error: e.message || "Couldn't load the feed — try again." });
+  }
+}
+
+function renderCategoryButtons() {
+  const row = document.getElementById('category-row');
+  row.innerHTML = CATEGORIES.map(c =>
+    `<button class="category-btn ${currentCategory === c.id ? 'active' : ''}" data-cat="${c.id}">${escapeHTML(c.label)}</button>`
+  ).join("");
+  row.querySelectorAll('.category-btn').forEach(btn => {
+    btn.addEventListener('click', () => loadFeed(btn.dataset.cat));
+  });
+}
+
+function initFeedPanel() {
+  const panel = document.getElementById('feed-panel');
+  panel.innerHTML = `<div id="category-row" class="category-row"></div><div id="feed-results"></div>`;
+  renderCategoryButtons();
+  if (!feedLoaded) {
+    feedLoaded = true;
+    loadFeed(currentCategory);
+  }
+}
+
+// ---- Search (unchanged — still live web search, still separate from the feed) ----
+function getSaved() {
+  try { return JSON.parse(localStorage.getItem('lit-saved-searches') || '[]'); } catch { return []; }
+}
+function setSaved(arr) {
+  localStorage.setItem('lit-saved-searches', JSON.stringify(arr));
+  renderSavedChips();
+}
+
+function renderSavedChips() {
+  const el = document.getElementById('saved-row');
+  const saved = getSaved();
+  if (!el) return;
+  if (saved.length === 0) { el.innerHTML = ""; return; }
+  el.innerHTML = saved.map(s => `
+    <div class="saved-chip">
+      <span data-q="${escapeHTML(s)}">${escapeHTML(s)}</span>
+      <span class="x" data-remove="${escapeHTML(s)}">×</span>
+    </div>`).join("");
+  el.querySelectorAll('[data-q]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.getElementById('search-input').value = chip.dataset.q;
+      runSearch(chip.dataset.q);
+    });
+  });
+  el.querySelectorAll('[data-remove]').forEach(x => {
+    x.addEventListener('click', () => setSaved(getSaved().filter(s => s !== x.dataset.remove)));
+  });
+}
+
+async function runSearch(term) {
+  if (!term || !term.trim()) return;
+  const resultsEl = document.getElementById('search-results');
+  renderState(resultsEl, { loading: true });
+  try {
+    const papers = await callAPI(`Search for real cardiac surgery literature relevant to: "${term}". Prioritize recent, high-quality sources.`);
+    renderState(resultsEl, { loading: false, papers, emptyText: "No results for that query." });
+  } catch (e) {
+    renderState(resultsEl, { loading: false, error: e.message || "Search failed — try again." });
+  }
+}
+
+function initSearchPanel() {
+  const panel = document.getElementById('search-panel');
+  panel.innerHTML = `
+    <div class="search-row">
+      <input type="text" id="search-input" placeholder="e.g. TAVR outcomes bicuspid aortic valve" />
+      <button class="primary" id="search-btn">Search</button>
+      <button class="icon-btn" id="save-btn" title="Save this search">☆</button>
+    </div>
+    <div id="saved-row" class="saved-row"></div>
+    <div id="search-results" style="margin-top:20px">
+      <div class="empty">Search real-time — case prep, specific questions, standard-of-care research.</div>
+    </div>
+  `;
+  renderSavedChips();
+  const input = document.getElementById('search-input');
+  document.getElementById('search-btn').addEventListener('click', () => runSearch(input.value));
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') runSearch(input.value); });
+  document.getElementById('save-btn').addEventListener('click', () => {
+    const v = input.value.trim();
+    if (!v) return;
+    const saved = getSaved();
+    if (saved.includes(v)) return;
+    setSaved([v, ...saved].slice(0, 15));
+  });
+}
+
+// ---- Tabs ----
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.dataset.tab;
+    document.getElementById('feed-panel').style.display = tab === 'feed' ? 'block' : 'none';
+    document.getElementById('search-panel').style.display = tab === 'search' ? 'block' : 'none';
+  });
+});
+
+initFeedPanel();
+initSearchPanel();
+</script>
+</body>
+</html>
