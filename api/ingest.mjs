@@ -18,12 +18,30 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: `Unknown category: ${category}` });
   }
 
-  const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  );
+  let supabase;
 
   try {
+    // Validate env vars up front with clear errors, since a malformed
+    // SUPABASE_URL throws inside createClient() and previously crashed
+    // silently before reaching the catch block below.
+    if (!process.env.SUPABASE_URL) throw new Error('SUPABASE_URL is not set');
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set');
+    if (!process.env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY is not set');
+
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(process.env.SUPABASE_URL);
+    } catch {
+      throw new Error(`SUPABASE_URL is not a valid URL: "${process.env.SUPABASE_URL}"`);
+    }
+    if (parsedUrl.pathname !== '/' && parsedUrl.pathname !== '') {
+      throw new Error(
+        `SUPABASE_URL should be just the bare domain (e.g. https://xxxxx.supabase.co), ` +
+        `but it has a path attached: "${parsedUrl.pathname}". Remove everything after ".co".`
+      );
+    }
+
+    supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
     // 1. Fetch candidates from the right source.
     let candidates;
     if (category === 'news') {
@@ -44,6 +62,7 @@ export default async function handler(req, res) {
         externalId: a.pmid,
         title: a.title,
         source: a.journal,
+        authors: a.authors,
         url: a.url,
         publishedDate: a.publishedDate,
         abstract: a.abstract,
@@ -79,6 +98,7 @@ export default async function handler(req, res) {
         category,
         source: it.source,
         title: it.title,
+        authors: it.authors || null,
         url: it.url,
         summary: it.summary,
         published_date: it.publishedDate,
