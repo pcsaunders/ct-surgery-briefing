@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>CT Surgery Briefing</title>
+<title>Cardiac Surgery Daily Brief</title>
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%231B2A4A%22/><text x=%2250%22 y=%2265%22 font-size=%2255%22 fill=%22%237A9B76%22 text-anchor=%22middle%22 font-family=%22Georgia%22>C</text></svg>" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-title" content="CT Briefing" />
+<meta name="apple-mobile-web-app-title" content="Cardiac Brief" />
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -25,8 +25,12 @@
   header { border-bottom: 1px solid var(--border); background: var(--surface); }
   header .inner { padding: 28px 20px 0; max-width: 860px; margin: 0 auto; }
   .eyebrow { font-family: 'Newsreader', serif; font-style: italic; font-size: 14px; color: var(--sage-deep); margin-bottom: 2px; }
-  h1 { font-family: 'Newsreader', serif; font-weight: 500; font-size: 30px; margin: 0; letter-spacing: -0.01em; }
+  h1 { font-family: 'Public Sans', sans-serif; font-weight: 800; font-size: 30px; margin: 0; letter-spacing: -0.01em; }
   .byline { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+  .ekg-strip { width: 100%; height: 36px; margin-top: 14px; overflow: hidden; position: relative; }
+  .ekg-track { display: flex; width: 200%; height: 36px; animation: ekgmove 3.5s linear infinite; }
+  .ekg-track svg { flex-shrink: 0; }
+  @keyframes ekgmove { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   .tabs { display: flex; gap: 4px; margin-top: 20px; }
   .tab-btn { display: flex; align-items: center; gap: 6px; padding: 10px 16px; border: none; background: transparent; border-bottom: 2px solid transparent; color: var(--muted); font-weight: 600; font-size: 14px; cursor: pointer; font-family: 'Public Sans', sans-serif; }
   .tab-btn.active { color: var(--navy); border-bottom: 2px solid var(--navy); }
@@ -63,8 +67,14 @@
 <header>
   <div class="inner">
     <div class="eyebrow">Literature & news</div>
-    <h1>CT Surgery Briefing</h1>
+    <h1>Cardiac Surgery Daily Brief</h1>
     <div class="byline">Curated by Paul C. Saunders, MD</div>
+    <div class="ekg-strip">
+      <div class="ekg-track">
+        <svg width="440" height="36" viewBox="0 0 440 36"><path d="M0,18 L60,18 L75,4 L90,32 L105,18 L180,18 L195,8 L210,28 L225,18 L440,18" stroke="#B23A2E" stroke-width="2" fill="none"/></svg>
+        <svg width="440" height="36" viewBox="0 0 440 36"><path d="M0,18 L60,18 L75,4 L90,32 L105,18 L180,18 L195,8 L210,28 L225,18 L440,18" stroke="#B23A2E" stroke-width="2" fill="none"/></svg>
+      </div>
+    </div>
     <div class="tabs">
       <button class="tab-btn active" data-tab="feed">Recent feed</button>
       <button class="tab-btn" data-tab="search">Search</button>
