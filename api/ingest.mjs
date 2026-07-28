@@ -3,8 +3,15 @@ import { searchPubmed, CATEGORY_QUERIES } from '../lib/pubmed.mjs';
 import { fetchCardiacNews } from '../lib/google-news.mjs';
 import { batchSummarize } from '../lib/summarize.mjs';
 
-const VALID_CATEGORIES = ['coronary', 'valvular', 'structural', 'aortic', 'ecmo', 'news'];
+const VALID_CATEGORIES = const VALID_CATEGORIES = ['coronary', 'valvular', 'structural', 'aortic', 'ecmo', 'news', 'journals'];
 
+// Per-category fetch windows. Journals is a whole-TOC sweep so it needs a
+// bigger cap; topic queries are narrower.
+const FETCH_CONFIG = {
+  journals: { days: 7, retmax: 45 },
+  news:     { days: 3, limit: 20 },
+  default:  { days: 7, retmax: 25 },
+};
 export default async function handler(req, res) {
   // Vercel signs cron-triggered requests with this header automatically.
   // Rejects anyone hitting the URL directly without the secret.
