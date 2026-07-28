@@ -3,7 +3,7 @@ import { searchPubmed, CATEGORY_QUERIES } from '../lib/pubmed.mjs';
 import { fetchCardiacNews } from '../lib/google-news.mjs';
 import { batchSummarize } from '../lib/summarize.mjs';
 
-const VALID_CATEGORIES = const VALID_CATEGORIES = ['coronary', 'valvular', 'structural', 'aortic', 'ecmo', 'news', 'journals'];
+const VALID_CATEGORIES = ['coronary', 'valvular', 'structural', 'aortic', 'ecmo', 'news', 'journals'];
 
 // Per-category fetch windows. Journals is a whole-TOC sweep so it needs a
 // bigger cap; topic queries are narrower.
@@ -12,6 +12,7 @@ const FETCH_CONFIG = {
   news:     { days: 3, limit: 20 },
   default:  { days: 7, retmax: 25 },
 };
+
 export default async function handler(req, res) {
   // Vercel signs cron-triggered requests with this header automatically.
   // Rejects anyone hitting the URL directly without the secret.
@@ -52,7 +53,8 @@ export default async function handler(req, res) {
     // 1. Fetch candidates from the right source.
     let candidates;
     if (category === 'news') {
-      const items = await fetchCardiacNews({ days: 2, limit: 10 });
+      const cfg = FETCH_CONFIG.news;
+      const items = await fetchCardiacNews({ days: cfg.days, limit: cfg.limit });
       candidates = items.map((it) => ({
         id: it.externalId,
         externalId: it.externalId,
@@ -63,7 +65,8 @@ export default async function handler(req, res) {
         rawSnippet: it.rawSnippet,
       }));
     } else {
-      const articles = await searchPubmed(CATEGORY_QUERIES[category], { days: 3, retmax: 10 });
+      const cfg = FETCH_CONFIG[category] || FETCH_CONFIG.default;
+      const articles = await searchPubmed(CATEGORY_QUERIES[category], { days: cfg.days, retmax: cfg.retmax });
       candidates = articles.map((a) => ({
         id: a.pmid,
         externalId: a.pmid,
