@@ -5,6 +5,7 @@
     { "path": "/api/ingest?category=structural", "schedule": "10 6 * * *" },
     { "path": "/api/ingest?category=aortic", "schedule": "15 6 * * *" },
     { "path": "/api/ingest?category=ecmo", "schedule": "20 6 * * *" },
-    { "path": "/api/ingest?category=news", "schedule": "25 6 * * *" }
+    { "path": "/api/ingest?category=news", "schedule": "25 6 * * *" },
+    { "path": "/api/ingest?category=journals", "schedule": "35 6 * * *" }
   ]
 }
