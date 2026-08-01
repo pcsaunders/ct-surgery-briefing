@@ -3,6 +3,25 @@ import { searchPubmed, CATEGORY_QUERIES } from '../lib/pubmed.mjs';
 import { fetchCardiacNews } from '../lib/google-news.mjs';
 import { batchSummarize } from '../lib/summarize.mjs';
 
+const MAX_FUTURE_DAYS = 3;
+
+// Some journals set PubMed's electronic pub date weeks/months ahead of the
+// actual print issue. Uncapped, those items sort to the top of the feed
+// forever. Clamp anything too far in the future back to today.
+function normalizePublishedDate(dateStr) {
+  if (!dateStr) return dateStr;
+  const parsed = new Date(dateStr);
+  if (isNaN(parsed.getTime())) return dateStr; // malformed date — leave as-is, don't crash ingestion
+
+  const maxAllowed = new Date();
+  maxAllowed.setDate(maxAllowed.getDate() + MAX_FUTURE_DAYS);
+
+  if (parsed > maxAllowed) {
+    return new Date().toISOString();
+  }
+  return dateStr;
+}ye
+
 const VALID_CATEGORIES = ['coronary', 'valvular', 'structural', 'aortic', 'ecmo', 'news', 'journals'];
 
 // Per-category fetch windows. Journals is a whole-TOC sweep so it needs a
@@ -60,7 +79,7 @@ export default async function handler(req, res) {
         title: it.title,
         source: it.source,
         url: it.url,
-        publishedDate: it.publishedDate,
+        publishedDate: normalizePublishedDate(it.publishedDate),
         rawSnippet: it.rawSnippet,
       }));
     } else {
@@ -73,7 +92,7 @@ export default async function handler(req, res) {
         source: a.journal,
         authors: a.authors,
         url: a.url,
-        publishedDate: a.publishedDate,
+        publishedDate: normalizePublishedDate(a.publishedDate),
         abstract: a.abstract,
       }));
     }
