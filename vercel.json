@@ -1,11 +1,19 @@
 {
   "crons": [
-    { "path": "/api/ingest?category=coronary", "schedule": "0 6 * * *" },
-    { "path": "/api/ingest?category=valvular", "schedule": "5 6 * * *" },
-    { "path": "/api/ingest?category=structural", "schedule": "10 6 * * *" },
-    { "path": "/api/ingest?category=aortic", "schedule": "15 6 * * *" },
-    { "path": "/api/ingest?category=mcs", "schedule": "20 6 * * *" },
-    { "path": "/api/ingest?category=news", "schedule": "25 6 * * *" },
-    { "path": "/api/ingest?category=journals", "schedule": "35 6 * * *" }
+    { "path": "/api/ingest?category=coronary",   "schedule": "0 9 * * *" },
+    { "path": "/api/ingest?category=valvular",   "schedule": "0 9 * * *" },
+    { "path": "/api/ingest?category=structural", "schedule": "0 9 * * *" },
+    { "path": "/api/ingest?category=aortic",     "schedule": "0 9 * * *" },
+    { "path": "/api/ingest?category=mcs",        "schedule": "0 9 * * *" },
+    { "path": "/api/ingest?category=news",       "schedule": "0 9 * * *" },
+    { "path": "/api/ingest?category=journals",   "schedule": "0 10 * * *" },
+
+    { "path": "/api/ingest?category=coronary",   "schedule": "0 15 * * *" },
+    { "path": "/api/ingest?category=valvular",   "schedule": "0 15 * * *" },
+    { "path": "/api/ingest?category=structural", "schedule": "0 15 * * *" },
+    { "path": "/api/ingest?category=aortic",     "schedule": "0 15 * * *" },
+    { "path": "/api/ingest?category=mcs",        "schedule": "0 15 * * *" },
+    { "path": "/api/ingest?category=news",       "schedule": "0 15 * * *" },
+    { "path": "/api/ingest?category=journals",   "schedule": "0 16 * * *" }
   ]
 }
