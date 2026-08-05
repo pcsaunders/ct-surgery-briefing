@@ -22,7 +22,12 @@ function normalizePublishedDate(dateStr) {
   return dateStr;
 }
 
-const VALID_CATEGORIES = ['coronary', 'valvular', 'structural', 'aortic', 'ecmo', 'news', 'journals'];
+const VALID_CATEGORIES = ['coronary', 'valvular', 'structural', 'aortic', 'mcs', 'news', 'journals'];
+
+// ECMO was renamed to MCS when the query terms were expanded to cover LVAD,
+// Impella, TandemHeart, cardiogenic shock, etc. Keep the old slug working so
+// a stale cron URL or bookmarked endpoint doesn't silently 400.
+const CATEGORY_ALIASES = { ecmo: 'mcs' };
 
 // Per-category fetch windows. Journals is a whole-TOC sweep so it needs a
 // bigger cap; topic queries are narrower.
@@ -31,6 +36,7 @@ const FETCH_CONFIG = {
   news:     { days: 3, limit: 20 },
   default:  { days: 7, retmax: 25 },
 };
+
 export default async function handler(req, res) {
   // Vercel signs cron-triggered requests with this header automatically.
   // Rejects anyone hitting the URL directly without the secret.
@@ -39,9 +45,10 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const category = req.query.category;
+  const rawCategory = req.query.category;
+  const category = CATEGORY_ALIASES[rawCategory] || rawCategory;
   if (!VALID_CATEGORIES.includes(category)) {
-    return res.status(400).json({ error: `Unknown category: ${category}` });
+    return res.status(400).json({ error: `Unknown category: ${rawCategory}` });
   }
 
   let supabase;
@@ -68,6 +75,7 @@ export default async function handler(req, res) {
     }
 
     supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+
     // 1. Fetch candidates from the right source.
     let candidates;
     if (category === 'news') {
@@ -84,7 +92,19 @@ export default async function handler(req, res) {
       }));
     } else {
       const cfg = FETCH_CONFIG[category] || FETCH_CONFIG.default;
-      const articles = await searchPubmed(CATEGORY_QUERIES[category], { days: cfg.days, retmax: cfg.retmax });
+
+      // A missing query used to fall through to searchPubmed(undefined), which
+      // returned zero results and exited with a 200. That made a broken
+      // category indistinguishable from a quiet day. Fail loudly instead.
+      const query = CATEGORY_QUERIES[category];
+      if (!query) {
+        throw new Error(
+          `No PubMed query defined for category "${category}". ` +
+          `Available keys in CATEGORY_QUERIES: ${Object.keys(CATEGORY_QUERIES).join(', ')}`
+        );
+      }
+
+      const articles = await searchPubmed(query, { days: cfg.days, retmax: cfg.retmax });
       candidates = articles.map((a) => ({
         id: a.pmid,
         externalId: a.pmid,
