@@ -20,7 +20,7 @@ function normalizePublishedDate(dateStr) {
     return new Date().toISOString();
   }
   return dateStr;
-}ye
+}
 
 const VALID_CATEGORIES = ['coronary', 'valvular', 'structural', 'aortic', 'ecmo', 'news', 'journals'];
 
